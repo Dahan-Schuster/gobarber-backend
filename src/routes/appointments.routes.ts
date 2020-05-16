@@ -1,39 +1,40 @@
 import { Router } from 'express';
-import { startOfHour, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import AppointmentsRepository from '../Repositories/AppointmentsRepository';
+import CreateAppointmentService from '../services/CreateAppointmentService';
 
 const appointmentsRouter = Router();
 const appointmentsRepository = new AppointmentsRepository();
 
 /**
  * Handle POST Appointments requests
+ * Receives the request, instantiate and calls
+ * the createAppointmentService, and then sends the response
  *
  * @bodyParam provider
  * @bodyParam date
  *
  * @since 1.0.0
+ * @since 1.1.0 - Applies the Single Responsibility Principle, from SOLID. This version uses the service to create the
+ * new appointment, giving to the router the unique work of receive a request, call a file and send a response
  */
 appointmentsRouter.post('/', (req, res) => {
-	const { provider, date } = req.body;
+	try {
+		const { provider, date } = req.body;
+		const parsedDate = parseISO(date); // data transformation, route responsibility
 
-	const parsedDate = startOfHour(parseISO(date));
+		const createAppointmentService = new CreateAppointmentService(
+			appointmentsRepository,
+		);
+		const appointment = createAppointmentService.execute({
+			provider,
+			date: parsedDate,
+		});
 
-	const findAppointmentInSameDate = appointmentsRepository.findByDate(
-		parsedDate,
-	);
-
-	if (findAppointmentInSameDate) {
-		return res
-			.status(400)
-			.json({ error: 'This appointment is already booked' });
+		return res.json(appointment);
+	} catch (err) {
+		return res.status(400).json({ error: err.message });
 	}
-
-	const appointment = appointmentsRepository.create({
-		provider,
-		date: parsedDate,
-	});
-
-	return res.json(appointment);
 });
 
 /**
