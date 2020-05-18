@@ -1,5 +1,6 @@
 import express from 'express';
 import routes from './routes/index';
+import 'reflect-metadata';
 
 import './database';
 
