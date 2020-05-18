@@ -1,4 +1,6 @@
 import { startOfHour } from 'date-fns';
+import { getCustomRepository } from 'typeorm';
+
 import Appointment from '../models/Appointment';
 import AppointmentsRepository from '../Repositories/AppointmentsRepository';
 
@@ -17,37 +19,28 @@ interface RequestDTO {
  * Class CreateAppointmentService
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 1.0.0
+ * @version 2.0.0 - Applies TypeOrm
  */
 export default class CreateAppointmentService {
-	private appointmentsRepository: AppointmentsRepository;
-
-	/**
-	 * Implements the Dependency Inversion Principle from SOLID,
-	 * receiving the appointmentsRepository from the constructor
-	 * instead of instantiating it inside the class
-	 *
-	 * @param appointmentsRepository
-	 * @since 1.0.0
-	 */
-	constructor(appointmentsRepository: AppointmentsRepository) {
-		this.appointmentsRepository = appointmentsRepository;
-	}
-
 	/**
 	 * Executes the service, creating an appointment with the data
 	 * received as a RequestDTO instance
 	 *
 	 * @param provider
 	 * @param date
-	 * @return Appointment
+	 * @return Promise<Appointment>
 	 *
 	 * @since 1.0.0
+	 * @since 2.0.0 - Use methods of TypeOrm to create and save the Appointment
 	 */
-	public execute({ provider, date }: RequestDTO): Appointment {
+	public async execute({ provider, date }: RequestDTO): Promise<Appointment> {
+		const appointmentsRepository = getCustomRepository(
+			AppointmentsRepository,
+		);
+
 		// business rule: each appointment must be booked at the start of the hour
 		const appointmentDate = startOfHour(date);
-		const findAppointmentInSameDate = this.appointmentsRepository.findByDate(
+		const findAppointmentInSameDate = await appointmentsRepository.findByDate(
 			appointmentDate,
 		);
 
@@ -56,9 +49,13 @@ export default class CreateAppointmentService {
 			throw Error('This appointment is already booked');
 		}
 
-		return this.appointmentsRepository.create({
+		const appointment = appointmentsRepository.create({
 			provider,
 			date: appointmentDate,
 		});
+
+		await appointmentsRepository.save(appointment);
+
+		return appointment;
 	}
 }

@@ -1,76 +1,32 @@
-import { isEqual } from 'date-fns';
-import Appointment from '../models/Appointment';
+import { EntityRepository, Repository } from 'typeorm';
 
-/**
- * DTO for creating new appointments
- *
- * @version 1.0.0
- */
-interface CreateAppointmentDTO {
-	provider: string;
-	date: Date;
-}
+import Appointment from '../models/Appointment';
 
 /**
  * Class AppointmentsRepository
  * For operations with the appointments repository
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 1.0.0
+ * @version 2.0.0 - Applies TypeOrm
  */
-class AppointmentsRepository {
-	private appointments: Appointment[];
-
-	/**
-	 * @since 1.0.0
-	 */
-	constructor() {
-		this.appointments = [];
-	}
-
-	/**
-	 * Returns all the appointments
-	 *
-	 * @return Appointment[]
-	 *
-	 * @since 1.0.0
-	 */
-	public all(): Appointment[] {
-		return this.appointments;
-	}
-
+@EntityRepository(Appointment)
+class AppointmentsRepository extends Repository<Appointment> {
 	/**
 	 * Finds an appointment by its book date
 	 * Returns null if no appointment is find
 	 *
 	 * @param date
-	 * @return Appointment | Null
+	 * @return Promise<Appointment | null>
 	 *
 	 * @since 1.0.0
+	 * @since 2.0.0 - Use methods of TypeOrm to search in the repository
 	 */
-	public findByDate(date: Date): Appointment | null {
-		const findAppointment = this.appointments.find(appointment =>
-			isEqual(date, appointment.date),
-		);
+	public async findByDate(date: Date): Promise<Appointment | null> {
+		const findAppointment = await this.findOne({
+			where: { date },
+		});
 
 		return findAppointment || null;
-	}
-
-	/**
-	 * Creates a new appointment, save it in the repository
-	 * and return it and an Appointment object
-	 *
-	 * @param provider
-	 * @param date
-	 * @return Appointment
-	 *
-	 * @since 1.0.0
-	 */
-	public create({ provider, date }: CreateAppointmentDTO): Appointment {
-		const appointment = new Appointment({ provider, date });
-		this.appointments.push(appointment);
-
-		return appointment;
 	}
 }
 
