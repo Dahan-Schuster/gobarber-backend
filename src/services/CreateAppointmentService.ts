@@ -8,10 +8,12 @@ import AppointmentsRepository from '../Repositories/AppointmentsRepository';
  * Interface RequestDTO
  * Object template for the data received by the service
  *
- * @version 1.0.0
+ * @version 2.0.0
+ * @since 1.0.0
+ * @since 2.0.0 - Changed the provider field to providerId
  */
 interface RequestDTO {
-	provider: string;
+	providerId: string;
 	date: Date;
 }
 
@@ -26,14 +28,18 @@ export default class CreateAppointmentService {
 	 * Executes the service, creating an appointment with the data
 	 * received as a RequestDTO instance
 	 *
-	 * @param provider
+	 * @param providerId
 	 * @param date
 	 * @return Promise<Appointment>
 	 *
 	 * @since 1.0.0
 	 * @since 2.0.0 - Use methods of TypeOrm to create and save the Appointment
+	 * @since 3.0.0 - Change the provider param to providerId
 	 */
-	public async execute({ provider, date }: RequestDTO): Promise<Appointment> {
+	public async execute({
+		providerId,
+		date,
+	}: RequestDTO): Promise<Appointment> {
 		const appointmentsRepository = getCustomRepository(
 			AppointmentsRepository,
 		);
@@ -50,7 +56,7 @@ export default class CreateAppointmentService {
 		}
 
 		const appointment = appointmentsRepository.create({
-			provider,
+			providerId,
 			date: appointmentDate,
 		});
 

@@ -12,22 +12,23 @@ const appointmentsRouter = Router();
  * Receives the request, instantiate and calls
  * the createAppointmentService, and then sends the response
  *
- * @bodyParam provider
+ * @bodyParam providerId
  * @bodyParam date
  *
  * @since 1.0.0
  * @since 1.1.0 - Applies the Single Responsibility Principle, from SOLID. This version uses the service to create the
  * new appointment, giving to the router the unique work of receive a request, call a file and send a response
  * @since 1.2.0 - Updates the use of the createAppointmentService after the changes with TypeOrm
+ * @since 2.0.0 - Change the provider body param to providerId
  */
 appointmentsRouter.post('/', async (req, res) => {
 	try {
-		const { provider, date } = req.body;
+		const { providerId, date } = req.body;
 		const parsedDate = parseISO(date); // data transformation, route responsibility
 
 		const createAppointmentService = new CreateAppointmentService();
 		const appointment = await createAppointmentService.execute({
-			provider,
+			providerId,
 			date: parsedDate,
 		});
 
