@@ -4,7 +4,10 @@ import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
 	UpdateDateColumn,
+	ManyToOne,
+	JoinColumn,
 } from 'typeorm';
+import User from './User';
 
 /**
  * Class Appointment
@@ -18,7 +21,11 @@ class Appointment {
 	id: string;
 
 	@Column()
-	provider: string;
+	providerId: string;
+
+	@ManyToOne(() => User)
+	@JoinColumn({ name: 'provider_id' })
+	provider: User;
 
 	@Column('timestamp with time zone')
 	date: Date;
