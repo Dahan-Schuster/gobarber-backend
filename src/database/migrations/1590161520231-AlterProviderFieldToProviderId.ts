@@ -12,7 +12,7 @@ export default class AlterProviderFieldToProviderId1590161520231
 		await queryRunner.addColumn(
 			'appointments',
 			new TableColumn({
-				name: 'providerId',
+				name: 'provider_id',
 				type: 'uuid',
 				isNullable: true,
 			}),
@@ -21,7 +21,7 @@ export default class AlterProviderFieldToProviderId1590161520231
 			'appointments',
 			new TableForeignKey({
 				name: 'fk_appointments_users',
-				columnNames: ['providerId'],
+				columnNames: ['provider_id'],
 				referencedColumnNames: ['id'],
 				referencedTableName: 'users',
 				onDelete: 'SET NULL',
@@ -35,12 +35,13 @@ export default class AlterProviderFieldToProviderId1590161520231
 			'appointments',
 			'fk_appointments_users',
 		);
-		await queryRunner.dropColumn('appointments', 'providerId');
+		await queryRunner.dropColumn('appointments', 'provider_id');
 		await queryRunner.addColumn(
 			'appointments',
 			new TableColumn({
 				name: 'provider',
 				type: 'varchar',
+				isNullable: true,
 			}),
 		);
 	}
