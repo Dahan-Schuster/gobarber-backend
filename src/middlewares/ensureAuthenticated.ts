@@ -22,6 +22,7 @@ interface TokenPayload {
  * @param next
  *
  * @version 1.0.0
+ * @version 1.1.0 - Removes try/catch block because there's a Global Exception Handler
  */
 export default function ensureAuthenticated(
 	req: Request,
@@ -37,15 +38,9 @@ export default function ensureAuthenticated(
 
 	const [, token] = authorizationHeader.split(' ');
 
-	try {
-		const decodedToken = verify(token, authConfig.jwt.secret);
+	const decodedToken = verify(token, authConfig.jwt.secret);
 
-		const { sub } = decodedToken as TokenPayload;
-		req.user = {
-			id: sub,
-		};
-		next();
-	} catch {
-		res.status(400).json({ error: 'Invalid token' });
-	}
+	const { sub } = decodedToken as TokenPayload;
+	req.user = { id: sub };
+	next();
 }

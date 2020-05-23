@@ -17,17 +17,14 @@ const upload = multer(uploadConfig);
  * @bodyParam password
  *
  * @since 1.0.0
+ * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
  */
 usersRouter.post('/', async (req, res) => {
-	try {
-		const { name, email, password } = req.body;
-		const createUserService = new CreateUserService();
-		const user = await createUserService.execute({ name, email, password });
+	const { name, email, password } = req.body;
+	const createUserService = new CreateUserService();
+	const user = await createUserService.execute({ name, email, password });
 
-		return res.json(user);
-	} catch (err) {
-		return res.status(400).json({ error: err.message });
-	}
+	return res.json(user);
 });
 
 /**
@@ -37,24 +34,21 @@ usersRouter.post('/', async (req, res) => {
  * @bodyParam avatar
  *
  * @since 1.0.0
+ * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
  */
 usersRouter.patch(
 	'/avatar',
 	ensureAuthenticated,
 	upload.single('avatar'),
 	async (req, res) => {
-		try {
-			const updateUserAvatarService = new UpdateUserAvatarService();
+		const updateUserAvatarService = new UpdateUserAvatarService();
 
-			const user = await updateUserAvatarService.execute({
-				userId: req.user.id,
-				avatarFilename: req.file.filename,
-			});
+		const user = await updateUserAvatarService.execute({
+			userId: req.user.id,
+			avatarFilename: req.file.filename,
+		});
 
-			return res.json(user);
-		} catch (err) {
-			return res.status(400).json({ error: err.message });
-		}
+		return res.json(user);
 	},
 );
 
