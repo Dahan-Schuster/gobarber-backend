@@ -10,7 +10,7 @@ import {
  * Class User
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 1.0.0
+ * @version 1.1.0 - Adds avatar field
  */
 @Entity('users')
 export default class User {
@@ -25,6 +25,9 @@ export default class User {
 
 	@Column()
 	password: string;
+
+	@Column()
+	avatar: string;
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
