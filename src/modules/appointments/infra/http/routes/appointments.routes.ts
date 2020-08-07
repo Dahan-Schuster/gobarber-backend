@@ -1,9 +1,15 @@
+/**
+ * Appointments Routes
+ * @author Dahan Schuster <dan.plschuster@gmail.com>
+ * @version 3.0.0 - Applies Liskov Substitution Principle
+ */
+
 import { Router } from 'express';
 import { parseISO } from 'date-fns';
-import { getCustomRepository } from 'typeorm';
 
 import AppointmentsRepository from '@modules/appointments/infra/typeorm/repositories/AppointmentsRepository';
 import CreateAppointmentService from '@modules/appointments/services/CreateAppointmentService';
+
 import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
 
 const appointmentsRouter = Router();
@@ -24,12 +30,15 @@ appointmentsRouter.use(ensureAuthenticated);
  * @since 1.2.0 - Updates the use of the createAppointmentService after the changes with TypeOrm
  * @since 2.0.0 - Change the provider body param to providerId
  * @since 2.1.0 - Removes try/catch block because there's a Global Exception Handler
+ * @since 3.0.0 - Applies Liskov Substitution Principle
  */
 appointmentsRouter.post('/', async (req, res) => {
 	const { providerId, date } = req.body;
 	const parsedDate = parseISO(date); // data transformation, route responsibility
 
-	const createAppointmentService = new CreateAppointmentService();
+	const createAppointmentService = new CreateAppointmentService(
+		new AppointmentsRepository(),
+	);
 	const appointment = await createAppointmentService.execute({
 		providerId,
 		date: parsedDate,
@@ -45,11 +54,10 @@ appointmentsRouter.post('/', async (req, res) => {
  * @since 2.0.0 - Uses TypeOrm to get the repository and search por appointments
  * @since 2.1.0 - Removes try/catch block because there's a Global Exception Handler
  */
-appointmentsRouter.get('/', async (req, res) => {
-	const appointmentsRepository = getCustomRepository(AppointmentsRepository);
-	const appointments = await appointmentsRepository.find();
-
-	return res.json(appointments);
-});
+// appointmentsRouter.get('/', async (req, res) => {
+// 	const appointments = await appointmentsRepository.find();
+//
+// 	return res.json(appointments);
+// });
 
 export default appointmentsRouter;
