@@ -5,7 +5,7 @@ import AppError from '@shared/errors/AppError';
 
 import User from '@modules/users/infra/typeorm/entities/User';
 import uploadConfig from '@config/upload';
-import IUsersRepository from '@modules/users/infra/repositories/IUsersRepository';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 
 interface IRequestDTO {
 	userId: string;

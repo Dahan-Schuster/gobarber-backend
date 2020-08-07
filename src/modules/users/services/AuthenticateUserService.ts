@@ -5,7 +5,7 @@ import AppError from '@shared/errors/AppError';
 
 import authConfig from '@config/auth';
 import User from '@modules/users/infra/typeorm/entities/User';
-import IUsersRepository from '@modules/users/infra/repositories/IUsersRepository';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 
 /**
  * Interface for the data object used to auth a user
