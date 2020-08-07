@@ -1,8 +1,14 @@
+/**
+ * Session Routes
+ * Create user's sessions (login)
+ * @author Dahan Schuster <dan.plschuster@gmail.com>
+ * @version 1.2.0 - Applies the use of the controllers
+ */
+
 import { Router } from 'express';
+import SessionsController from '@modules/users/infra/http/controllers/SessionsController';
 
-import AuthenticateUserService from '@modules/users/services/AuthenticateUserService';
-import { container } from 'tsyringe';
-
+const sessionsController = new SessionsController();
 const sessionsRouter = Router();
 
 /**
@@ -14,17 +20,8 @@ const sessionsRouter = Router();
  *
  * @since 1.0.0
  * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
+ * @since 1.2.0 - Moves the route's logic to the controller
  */
-sessionsRouter.post('/', async (req, res) => {
-	const { email, password } = req.body;
-	const authenticateUserService = container.resolve(AuthenticateUserService);
-
-	const { user, token } = await authenticateUserService.execute({
-		email,
-		password,
-	});
-
-	return res.json({ user, token });
-});
+sessionsRouter.post('/', sessionsController.login);
 
 export default sessionsRouter;

@@ -1,15 +1,19 @@
+/**
+ * Users Routes
+ * @author Dahan Schuster <dan.plschuster@gmail.com>
+ * @version 1.2.0 - Applies the use of the controllers
+ */
+
 import { Router } from 'express';
 import multer from 'multer';
 
 import uploadConfig from '@config/upload';
 
-import CreateUserService from '@modules/users/services/CreateUserService';
-import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
-
 import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
-import { container } from 'tsyringe';
+import UsersController from '@modules/users/infra/http/controllers/UsersController';
 
 const usersRouter = Router();
+const usersController = new UsersController();
 const upload = multer(uploadConfig);
 
 /**
@@ -21,14 +25,9 @@ const upload = multer(uploadConfig);
  *
  * @since 1.0.0
  * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
+ * @since 1.2.0 - Moves the route's logic to the controller
  */
-usersRouter.post('/', async (req, res) => {
-	const { name, email, password } = req.body;
-	const createUserService = container.resolve(CreateUserService);
-	const user = await createUserService.execute({ name, email, password });
-
-	return res.json(user);
-});
+usersRouter.post('/', usersController.create);
 
 /**
  * Handle PATCH Users' avatars requests
@@ -38,23 +37,13 @@ usersRouter.post('/', async (req, res) => {
  *
  * @since 1.0.0
  * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
+ * @since 1.2.0 - Moves the route's logic to the controller
  */
 usersRouter.patch(
 	'/avatar',
 	ensureAuthenticated,
 	upload.single('avatar'),
-	async (req, res) => {
-		const updateUserAvatarService = container.resolve(
-			UpdateUserAvatarService,
-		);
-
-		const user = await updateUserAvatarService.execute({
-			userId: req.user.id,
-			avatarFilename: req.file.filename,
-		});
-
-		return res.json(user);
-	},
+	usersController.changeAvatar,
 );
 
 export default usersRouter;
