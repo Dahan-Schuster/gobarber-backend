@@ -1,4 +1,3 @@
-import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 
@@ -6,15 +5,15 @@ import AppError from '@shared/errors/AppError';
 
 import authConfig from '@config/auth';
 import User from '@modules/users/infra/typeorm/entities/User';
+import IUsersRepository from '@modules/users/infra/repositories/IUsersRepository';
 
 /**
  * Interface for the data object used to auth a user
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
  * @version 1.0.0
- *
  */
-interface RequestDTO {
+interface IRequestDTO {
 	email: string;
 	password: string;
 }
@@ -24,9 +23,8 @@ interface RequestDTO {
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
  * @version 1.0.0
- *
  */
-interface Response {
+interface IResponse {
 	user: User;
 	token: string;
 }
@@ -35,15 +33,20 @@ interface Response {
  * Class AuthenticateUserService
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 1.0.0
+ * @version 2.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
+ * repository implementation itself
  */
 export default class AuthenticateUserService {
-	public async execute({ email, password }: RequestDTO): Promise<Response> {
-		const usersRepository = getRepository(User);
+	/**
+	 * CreateUserService's constructor
+	 * Inicializes the IUsersRepository
+	 *
+	 * @param usersRepository
+	 */
+	constructor(private usersRepository: IUsersRepository) {}
 
-		const user = await usersRepository.findOne({
-			where: { email },
-		});
+	public async execute({ email, password }: IRequestDTO): Promise<IResponse> {
+		const user = await this.usersRepository.findByEmail(email);
 
 		if (!user) {
 			throw new AppError('Incorrect email/password combination', 401);
