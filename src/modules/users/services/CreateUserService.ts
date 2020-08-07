@@ -6,6 +6,7 @@ import User from '@modules/users/infra/typeorm/entities/User';
 
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
+import { inject, injectable } from 'tsyringe';
 
 /**
  * Class CreateUserService
@@ -14,6 +15,7 @@ import IUsersRepository from '@modules/users/repositories/IUsersRepository';
  * @version 2.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
  * repository implementation itself
  */
+@injectable()
 export default class CreateUserService {
 	/**
 	 * CreateUserService's constructor
@@ -21,7 +23,10 @@ export default class CreateUserService {
 	 *
 	 * @param usersRepository
 	 */
-	constructor(private usersRepository: IUsersRepository) {}
+	constructor(
+		@inject('UsersRepository')
+		private usersRepository: IUsersRepository,
+	) {}
 
 	public async execute({
 		name,

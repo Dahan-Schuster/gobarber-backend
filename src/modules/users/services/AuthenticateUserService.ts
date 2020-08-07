@@ -6,6 +6,7 @@ import AppError from '@shared/errors/AppError';
 import authConfig from '@config/auth';
 import User from '@modules/users/infra/typeorm/entities/User';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
+import { inject, injectable } from 'tsyringe';
 
 /**
  * Interface for the data object used to auth a user
@@ -36,6 +37,7 @@ interface IResponse {
  * @version 2.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
  * repository implementation itself
  */
+@injectable()
 export default class AuthenticateUserService {
 	/**
 	 * CreateUserService's constructor
@@ -43,7 +45,10 @@ export default class AuthenticateUserService {
 	 *
 	 * @param usersRepository
 	 */
-	constructor(private usersRepository: IUsersRepository) {}
+	constructor(
+		@inject('UsersRepository')
+		private usersRepository: IUsersRepository,
+	) {}
 
 	public async execute({ email, password }: IRequestDTO): Promise<IResponse> {
 		const user = await this.usersRepository.findByEmail(email);
