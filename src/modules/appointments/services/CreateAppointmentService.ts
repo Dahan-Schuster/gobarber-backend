@@ -1,4 +1,5 @@
 import { startOfHour } from 'date-fns';
+import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
@@ -13,6 +14,7 @@ import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointment
  * @version 4.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
  * repository implementation itself
  */
+@injectable()
 export default class CreateAppointmentService {
 	/**
 	 * CreateAppointmentService's constructor
@@ -20,7 +22,10 @@ export default class CreateAppointmentService {
 	 *
 	 * @param appointmentsRepository
 	 */
-	constructor(private appointmentsRepository: IAppointmentsRepository) {}
+	constructor(
+		@inject('AppointmentsRepository')
+		private appointmentsRepository: IAppointmentsRepository,
+	) {}
 
 	/**
 	 * Executes the service, creating an appointment with the data
