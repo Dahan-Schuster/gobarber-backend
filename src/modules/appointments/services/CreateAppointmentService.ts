@@ -1,54 +1,46 @@
 import { startOfHour } from 'date-fns';
-import { getCustomRepository } from 'typeorm';
 
 import AppError from '@shared/errors/AppError';
 
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
-import AppointmentsRepository from '@modules/appointments/infra/typeorm/repositories/AppointmentsRepository';
-
-/**
- * Interface RequestDTO
- * Object template for the data received by the service
- *
- * @version 2.0.0
- * @since 1.0.0
- * @since 2.0.0 - Changed the provider field to providerId
- */
-interface RequestDTO {
-	providerId: string;
-	date: Date;
-}
+import IAppointmentsRepository from '@modules/appointments/infra/repositories/IAppointmentsRepository';
+import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
 
 /**
  * Class CreateAppointmentService
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 2.0.0 - Applies TypeOrm
+ * @version 4.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
+ * repository implementation itself
  */
 export default class CreateAppointmentService {
 	/**
-	 * Executes the service, creating an appointment with the data
-	 * received as a RequestDTO instance
+	 * CreateAppointmentService's constructor
+	 * Inicializes the IAppointmentsRepository
 	 *
-	 * @param providerId
-	 * @param date
+	 * @param appointmentsRepository
+	 */
+	constructor(private appointmentsRepository: IAppointmentsRepository) {}
+
+	/**
+	 * Executes the service, creating an appointment with the data
+	 * received as a IRequestDTO instance
+	 *
+	 * @param ICreateAppointmentDTO
 	 * @return Promise<Appointment>
 	 *
 	 * @since 1.0.0
 	 * @since 2.0.0 - Use methods of TypeOrm to create and save the Appointment
 	 * @since 3.0.0 - Change the provider param to providerId
+	 * @since 4.0.0 - Applies Liskov Substitution Principle
 	 */
 	public async execute({
 		providerId,
 		date,
-	}: RequestDTO): Promise<Appointment> {
-		const appointmentsRepository = getCustomRepository(
-			AppointmentsRepository,
-		);
-
+	}: ICreateAppointmentDTO): Promise<Appointment> {
 		// business rule: each appointment must be booked at the start of the hour
 		const appointmentDate = startOfHour(date);
-		const findAppointmentInSameDate = await appointmentsRepository.findByDate(
+		const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
 			appointmentDate,
 		);
 
@@ -57,13 +49,9 @@ export default class CreateAppointmentService {
 			throw new AppError('This appointment is already booked');
 		}
 
-		const appointment = appointmentsRepository.create({
+		return this.appointmentsRepository.create({
 			providerId,
 			date: appointmentDate,
 		});
-
-		await appointmentsRepository.save(appointment);
-
-		return appointment;
 	}
 }
