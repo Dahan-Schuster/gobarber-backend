@@ -1,12 +1,11 @@
-import { hash } from 'bcryptjs';
-
+import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
 import User from '@modules/users/infra/typeorm/entities/User';
 
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
-import { inject, injectable } from 'tsyringe';
+import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 
 /**
  * Class CreateUserService
@@ -22,10 +21,14 @@ export default class CreateUserService {
 	 * Inicializes the IUsersRepository
 	 *
 	 * @param usersRepository
+	 * @param hashProvider
 	 */
 	constructor(
 		@inject('UsersRepository')
 		private usersRepository: IUsersRepository,
+
+		@inject('HashProvider')
+		private hashProvider: IHashProvider,
 	) {}
 
 	public async execute({
@@ -39,7 +42,7 @@ export default class CreateUserService {
 			throw new AppError('Email address already taken.');
 		}
 
-		const passwordHash = await hash(password, 8);
+		const passwordHash = await this.hashProvider.generateHash(password);
 		const user = await this.usersRepository.create({
 			name,
 			email,
