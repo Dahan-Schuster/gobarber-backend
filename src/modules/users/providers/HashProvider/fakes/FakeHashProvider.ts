@@ -9,7 +9,7 @@ import IHashProvider from '@modules/users/providers/HashProvider/models/IHashPro
 export default class FakeHashProvider implements IHashProvider {
 	public generateHash = async (payload: string): Promise<string> => payload;
 
-	public comparteHash = async (
+	public compareHash = async (
 		payload: string,
 		hashed: string,
 	): Promise<boolean> => payload === hashed;
