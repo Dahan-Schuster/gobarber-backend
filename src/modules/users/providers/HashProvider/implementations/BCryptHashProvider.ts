@@ -13,7 +13,7 @@ export default class BCryptHashProvider implements IHashProvider {
 		return hash(payload, 8);
 	}
 
-	public async comparteHash(
+	public async compareHash(
 		payload: string,
 		hashed: string,
 	): Promise<boolean> {
