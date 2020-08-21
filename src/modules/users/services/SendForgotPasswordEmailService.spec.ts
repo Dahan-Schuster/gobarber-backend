@@ -31,7 +31,7 @@ describe('SendForgotPasswordEmail', () => {
 		});
 
 		await sendForgotPasswordEmail.execute({
-			email: 'johndoe@gmail.com',
+			email: 'johndoe@email.com',
 		});
 
 		expect(sendMail).toHaveBeenCalled();
