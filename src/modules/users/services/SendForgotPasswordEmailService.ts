@@ -3,6 +3,7 @@ import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IMailProvider from '@shared/providers/MailProvider/models/IMailProvider';
 import IUserTokensRepository from '@modules/users/repositories/IUserTokensRepository';
 import AppError from '@shared/errors/AppError';
+import * as path from 'path';
 
 interface IRequest {
 	email: string;
@@ -44,11 +45,29 @@ export default class SendForgotPasswordEmailService {
 			);
 		}
 
-		const userToken = await this.userTokensRepository.generate(user.id);
+		const { token } = await this.userTokensRepository.generate(user.id);
 
-		await this.mailProvider.sendMail(
-			email,
-			`Token de recuperação de senha: ${userToken.token}`,
+		const forgotPasswordTemplatePath = path.resolve(
+			__dirname,
+			'..',
+			'views',
+			'templates',
+			'forgot_password.hbs',
 		);
+
+		await this.mailProvider.sendMail({
+			to: {
+				name: user.name,
+				email: user.email,
+			},
+			subject: '[GoBarber] Recuperação de senha',
+			templateData: {
+				file: forgotPasswordTemplatePath,
+				variables: {
+					name: user.name,
+					link: `http://localhost:3000/reset_passwoword?token=${token}`,
+				},
+			},
+		});
 	}
 }
