@@ -8,7 +8,7 @@ import authConfig from '@config/auth';
  *
  * @version 1.0.0
  */
-interface TokenPayload {
+interface ITokenPayload {
 	iat: number;
 	exp: number;
 	sub: string;
@@ -40,7 +40,7 @@ export default function ensureAuthenticated(
 
 	const decodedToken = verify(token, authConfig.jwt.secret);
 
-	const { sub } = decodedToken as TokenPayload;
+	const { sub } = decodedToken as ITokenPayload;
 	req.user = { id: sub };
 	next();
 }
