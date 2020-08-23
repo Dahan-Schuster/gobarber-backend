@@ -24,6 +24,7 @@ export default class AppointmentsController {
 		request: Request,
 		response: Response,
 	): Promise<Response> {
+		const { id: userId } = request.user;
 		const { providerId, date } = request.body;
 		const parsedDate = parseISO(date); // data transformation, route responsibility
 
@@ -32,6 +33,7 @@ export default class AppointmentsController {
 		);
 		const appointment = await createAppointmentService.execute({
 			providerId,
+			userId,
 			date: parsedDate,
 		});
 
