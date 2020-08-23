@@ -23,17 +23,27 @@ export default class FakeUsersRepository implements IUsersRepository {
 		return Promise.resolve({ ...user });
 	}
 
-	findByEmail(email: string): Promise<User | undefined> {
+	public async findAllProviders(exceptUserIds?: string[]): Promise<User[]> {
+		let { users } = this;
+
+		if (exceptUserIds) {
+			users = users.filter(user => !exceptUserIds.includes(user.id));
+		}
+
+		return users;
+	}
+
+	public async findByEmail(email: string): Promise<User | undefined> {
 		const foundUser = this.users.find(u => u.email === email);
 		return Promise.resolve(foundUser ? { ...foundUser } : undefined);
 	}
 
-	findById(id: string): Promise<User | undefined> {
+	public async findById(id: string): Promise<User | undefined> {
 		const foundUser = this.users.find(u => u.id === id);
 		return Promise.resolve(foundUser ? { ...foundUser } : undefined);
 	}
 
-	save(user: User): Promise<User> {
+	public async save(user: User): Promise<User> {
 		const foundUserIndex = this.users.findIndex(u => u.id === user.id);
 
 		if (foundUserIndex > -1) {
