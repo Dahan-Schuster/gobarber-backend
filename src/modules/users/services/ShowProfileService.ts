@@ -18,7 +18,7 @@ interface IRequestDTO {
 @injectable()
 export default class ShowProfileService {
 	/**
-	 * CreateUserService's constructor
+	 * ShowProfileService's constructor
 	 * Inicializes the IUsersRepository
 	 *
 	 * @param usersRepository
