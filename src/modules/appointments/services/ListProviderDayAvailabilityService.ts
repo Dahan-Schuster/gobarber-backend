@@ -9,12 +9,12 @@ const { workJourney } = config;
 interface IRequestDTO {
 	providerId: string;
 	year: number;
-	month: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12; // miss range... ;-;
+	month: number;
 	day: number;
 }
 
 type IResponseDTO = Array<{
-	hour: number; // don't you think I'm gonna type from 1 to 31, isn't?
+	hour: number;
 	available: boolean;
 }>;
 
