@@ -7,6 +7,7 @@
 
 import { Router } from 'express';
 import SessionsController from '@modules/users/infra/http/controllers/SessionsController';
+import { celebrate, Joi, Segments } from 'celebrate';
 
 const sessionsController = new SessionsController();
 const sessionsRouter = Router();
@@ -22,6 +23,15 @@ const sessionsRouter = Router();
  * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
  * @since 1.2.0 - Moves the route's logic to the controller
  */
-sessionsRouter.post('/', sessionsController.login);
+sessionsRouter.post(
+	'/',
+	celebrate({
+		[Segments.BODY]: {
+			email: Joi.string().email().required(),
+			password: Joi.string().required(),
+		},
+	}),
+	sessionsController.login,
+);
 
 export default sessionsRouter;

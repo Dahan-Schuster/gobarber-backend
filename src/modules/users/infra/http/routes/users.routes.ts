@@ -11,6 +11,7 @@ import uploadConfig from '@config/upload';
 
 import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
 import UsersController from '@modules/users/infra/http/controllers/UsersController';
+import { celebrate, Joi, Segments } from 'celebrate';
 
 const usersRouter = Router();
 const usersController = new UsersController();
@@ -27,7 +28,17 @@ const upload = multer(uploadConfig);
  * @since 1.1.0 - Removes try/catch block because there's a Global Exception Handler
  * @since 1.2.0 - Moves the route's logic to the controller
  */
-usersRouter.post('/', usersController.create);
+usersRouter.post(
+	'/',
+	celebrate({
+		[Segments.BODY]: {
+			name: Joi.string().required(),
+			email: Joi.string().email().required(),
+			password: Joi.string().required(),
+		},
+	}),
+	usersController.create,
+);
 
 /**
  * Handle PATCH Users' avatars requests
