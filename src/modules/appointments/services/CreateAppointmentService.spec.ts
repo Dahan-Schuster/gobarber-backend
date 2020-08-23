@@ -1,17 +1,21 @@
 import { uuid } from 'uuidv4';
 
 import AppError from '@shared/errors/AppError';
+import FakeNotificationsRepository from '@modules/notifications/repositories/fakes/FakeNotificationsRepository';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
+let notificationsRepository: FakeNotificationsRepository;
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
 let createAppointmentService: CreateAppointmentService;
 
 describe('CreateAppointment', () => {
 	beforeEach(() => {
+		notificationsRepository = new FakeNotificationsRepository();
 		fakeAppointmentsRepository = new FakeAppointmentsRepository();
 		createAppointmentService = new CreateAppointmentService(
 			fakeAppointmentsRepository,
+			notificationsRepository,
 		);
 
 		jest.spyOn(Date, 'now').mockImplementationOnce(() => {
