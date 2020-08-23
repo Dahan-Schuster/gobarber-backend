@@ -1,3 +1,3 @@
-import { createConnection } from 'typeorm';
+import { createConnections } from 'typeorm';
 
-createConnection(); // lê as credenciais de dentro do ormconfig.json
+createConnections(); // lê as credenciais de dentro do ormconfig.json
