@@ -1,8 +1,9 @@
 import { inject, injectable } from 'tsyringe';
+import { classToClass } from 'class-transformer';
+
 import AppError from '@shared/errors/AppError';
 
 import User from '@modules/users/infra/typeorm/entities/User';
-
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
@@ -49,7 +50,6 @@ export default class CreateUserService {
 			password: passwordHash,
 		});
 
-		delete user.password;
-		return user;
+		return classToClass(user);
 	}
 }
