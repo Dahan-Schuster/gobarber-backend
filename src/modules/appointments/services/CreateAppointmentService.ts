@@ -1,4 +1,4 @@
-import { startOfHour } from 'date-fns';
+import { startOfHour, isBefore, getHours } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
@@ -7,12 +7,15 @@ import Appointment from '@modules/appointments/infra/typeorm/entities/Appointmen
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
 
+import config from '@modules/appointments/config';
+
+const { workJourney } = config;
+
 /**
  * Class CreateAppointmentService
  *
  * @author Dahan Schuster <dan.plschuster@gmail.com> <github:dahan-schuster>
- * @version 4.0.0 - Applies Liskov Substitution Principle, using and interface for the repository instead of the
- * repository implementation itself
+ * @version 4.1.0 - Implements business rules
  */
 @injectable()
 export default class CreateAppointmentService {
@@ -38,24 +41,48 @@ export default class CreateAppointmentService {
 	 * @since 2.0.0 - Use methods of TypeOrm to create and save the Appointment
 	 * @since 3.0.0 - Change the provider param to providerId
 	 * @since 4.0.0 - Applies Liskov Substitution Principle
+	 * @since 4.1.0 - Implements business rules
 	 */
 	public async execute({
 		providerId,
+		userId,
 		date,
 	}: ICreateAppointmentDTO): Promise<Appointment> {
-		// business rule: each appointment must be booked at the start of the hour
 		const appointmentDate = startOfHour(date);
+
+		if (isBefore(appointmentDate, Date.now())) {
+			throw new AppError(
+				"You can't create an appointment at a past date",
+			);
+		}
+
+		if (getHours(appointmentDate) < workJourney.startHour) {
+			throw new AppError(
+				`You can't create an appointment before ${workJourney.startHour}h`,
+			);
+		}
+
+		if (getHours(appointmentDate) >= workJourney.endHour) {
+			throw new AppError(
+				`You can't create an appointment after ${workJourney.endHour}h`,
+			);
+		}
+
+		if (userId === providerId) {
+			throw new AppError("You can't create an appointment with yourself");
+		}
+
 		const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
 			appointmentDate,
 		);
 
-		// business rule: appointments can't be booked at the same hour
 		if (findAppointmentInSameDate) {
 			throw new AppError('This appointment is already booked');
 		}
 
 		return this.appointmentsRepository.create({
 			providerId,
+			userId,
 			date: appointmentDate,
 		});
 	}
