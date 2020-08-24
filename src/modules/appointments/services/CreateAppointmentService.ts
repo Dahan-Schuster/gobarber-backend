@@ -9,6 +9,7 @@ import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointment
 import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 
 import config from '@modules/appointments/config';
+import ICacheProvider from '@shared/providers/CacheProvider/models/ICacheProvider';
 
 const { workJourney } = config;
 
@@ -26,6 +27,7 @@ export default class CreateAppointmentService {
 	 *
 	 * @param appointmentsRepository
 	 * @param notificationsRepository
+	 * @param cacheProvider
 	 */
 	constructor(
 		@inject('AppointmentsRepository')
@@ -33,6 +35,9 @@ export default class CreateAppointmentService {
 
 		@inject('NotificationsRepository')
 		private notificationsRepository: INotificationsRepository,
+
+		@inject('CacheProvider')
+		private cacheProvider: ICacheProvider,
 	) {}
 
 	/**
@@ -79,6 +84,7 @@ export default class CreateAppointmentService {
 
 		const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
 			appointmentDate,
+			providerId,
 		);
 
 		if (findAppointmentInSameDate) {
@@ -99,6 +105,13 @@ export default class CreateAppointmentService {
 			recipientId: providerId,
 			content: `Novo agendamento para o dia ${formattedDate}`,
 		});
+
+		await this.cacheProvider.invalidate(
+			`provider-appointments:${providerId}:${format(
+				appointmentDate,
+				'yyyy-M-d',
+			)}`,
+		);
 
 		return appointment;
 	}
