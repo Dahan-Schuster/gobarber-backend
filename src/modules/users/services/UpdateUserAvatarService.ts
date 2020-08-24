@@ -1,5 +1,4 @@
 import AppError from '@shared/errors/AppError';
-import { classToClass } from 'class-transformer';
 
 import User from '@modules/users/infra/typeorm/entities/User';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
@@ -56,6 +55,6 @@ export default class UpdateUserAvatarService {
 
 		await this.usersRepository.save(user);
 
-		return classToClass(user);
+		return user;
 	}
 }

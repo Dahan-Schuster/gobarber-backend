@@ -1,5 +1,4 @@
 import { inject, injectable } from 'tsyringe';
-import { classToClass } from 'class-transformer';
 
 import AppError from '@shared/errors/AppError';
 
@@ -50,6 +49,6 @@ export default class CreateUserService {
 			password: passwordHash,
 		});
 
-		return classToClass(user);
+		return user;
 	}
 }

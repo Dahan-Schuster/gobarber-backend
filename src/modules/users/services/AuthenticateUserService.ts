@@ -1,6 +1,5 @@
 import { inject, injectable } from 'tsyringe';
 import { sign } from 'jsonwebtoken';
-import { classToClass } from 'class-transformer';
 
 import authConfig from '@config/auth';
 
@@ -79,6 +78,6 @@ export default class AuthenticateUserService {
 			expiresIn,
 		});
 
-		return { user: classToClass(user), token };
+		return { user, token };
 	}
 }
