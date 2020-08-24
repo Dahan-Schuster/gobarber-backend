@@ -6,6 +6,7 @@ import User from '@modules/users/infra/typeorm/entities/User';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
+import ICacheProvider from '@shared/providers/CacheProvider/models/ICacheProvider';
 
 /**
  * Class CreateUserService
@@ -22,6 +23,7 @@ export default class CreateUserService {
 	 *
 	 * @param usersRepository
 	 * @param hashProvider
+	 * @param cacheProvider
 	 */
 	constructor(
 		@inject('UsersRepository')
@@ -29,6 +31,9 @@ export default class CreateUserService {
 
 		@inject('HashProvider')
 		private hashProvider: IHashProvider,
+
+		@inject('CacheProvider')
+		private cacheProvider: ICacheProvider,
 	) {}
 
 	public async execute({
@@ -48,6 +53,8 @@ export default class CreateUserService {
 			email,
 			password: passwordHash,
 		});
+
+		await this.cacheProvider.invalidatePrefix('providers-list');
 
 		return user;
 	}

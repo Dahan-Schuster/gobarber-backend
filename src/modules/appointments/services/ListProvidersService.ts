@@ -2,9 +2,10 @@ import { inject, injectable } from 'tsyringe';
 
 import User from '@modules/users/infra/typeorm/entities/User';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
+import ICacheProvider from '@shared/providers/CacheProvider/models/ICacheProvider';
 
 interface IRequestDTO {
-	exceptUserIds?: string[];
+	exceptUserId?: string;
 }
 
 /**
@@ -20,13 +21,29 @@ export default class ListProvidersService {
 	 * Inicializes the IUsersRepository
 	 *
 	 * @param usersRepository
+	 * @param cacheProvider
 	 */
 	constructor(
 		@inject('UsersRepository')
 		private usersRepository: IUsersRepository,
+
+		@inject('CacheProvider')
+		private cacheProvider: ICacheProvider,
 	) {}
 
-	public async execute({ exceptUserIds }: IRequestDTO): Promise<User[]> {
-		return this.usersRepository.findAllProviders(exceptUserIds);
+	public async execute({ exceptUserId }: IRequestDTO): Promise<User[]> {
+		let users = await this.cacheProvider.get<User[]>(
+			`providers-list:${exceptUserId}`,
+		);
+
+		if (!users) {
+			users = await this.usersRepository.findAllProviders(exceptUserId);
+			await this.cacheProvider.save(
+				`providers-list:${exceptUserId}`,
+				users,
+			);
+		}
+
+		return users;
 	}
 }
