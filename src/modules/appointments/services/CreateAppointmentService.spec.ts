@@ -2,10 +2,12 @@ import { uuid } from 'uuidv4';
 
 import AppError from '@shared/errors/AppError';
 import FakeNotificationsRepository from '@modules/notifications/repositories/fakes/FakeNotificationsRepository';
+import FakeCacheProvider from '@shared/providers/CacheProvider/fakes/FakeCacheProvider';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
 let notificationsRepository: FakeNotificationsRepository;
+let fakeCacheProvider: FakeCacheProvider;
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
 let createAppointmentService: CreateAppointmentService;
 
@@ -13,9 +15,11 @@ describe('CreateAppointment', () => {
 	beforeEach(() => {
 		notificationsRepository = new FakeNotificationsRepository();
 		fakeAppointmentsRepository = new FakeAppointmentsRepository();
+		fakeCacheProvider = new FakeCacheProvider();
 		createAppointmentService = new CreateAppointmentService(
 			fakeAppointmentsRepository,
 			notificationsRepository,
+			fakeCacheProvider,
 		);
 
 		jest.spyOn(Date, 'now').mockImplementationOnce(() => {

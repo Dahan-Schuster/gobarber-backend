@@ -1,8 +1,10 @@
 import FakeUsersRepository from '@modules/users/repositories/fakes/FakeUsersRepository';
 import FakeAppointmentsRepository from '@modules/appointments/repositories/fakes/FakeAppointmentsRepository';
 import ListProviderAppointmentsService from '@modules/appointments/services/ListProviderAppointmentsService';
+import FakeCacheProvider from '@shared/providers/CacheProvider/fakes/FakeCacheProvider';
 
 let fakeUsersRepository: FakeUsersRepository;
+let fakeCacheProvider: FakeCacheProvider;
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
 let listProviderAppointmentsService: ListProviderAppointmentsService;
 
@@ -10,8 +12,10 @@ describe('ListProviderAppointments', () => {
 	beforeEach(() => {
 		fakeUsersRepository = new FakeUsersRepository();
 		fakeAppointmentsRepository = new FakeAppointmentsRepository();
+		fakeCacheProvider = new FakeCacheProvider();
 		listProviderAppointmentsService = new ListProviderAppointmentsService(
 			fakeAppointmentsRepository,
+			fakeCacheProvider,
 		);
 
 		jest.spyOn(Date, 'now').mockImplementationOnce(() => {

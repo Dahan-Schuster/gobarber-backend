@@ -14,13 +14,13 @@ import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 export default class FakeUsersRepository implements IUsersRepository {
 	private users: User[] = [];
 
-	create(data: ICreateUserDTO): Promise<User> {
+	public async create(data: ICreateUserDTO): Promise<User> {
 		const user = new User();
 
 		Object.assign(user, { ...data, id: uuid() });
 		this.users.push(user);
 
-		return Promise.resolve({ ...user });
+		return user;
 	}
 
 	public async findAllProviders(exceptUserId?: string): Promise<User[]> {
@@ -34,13 +34,11 @@ export default class FakeUsersRepository implements IUsersRepository {
 	}
 
 	public async findByEmail(email: string): Promise<User | undefined> {
-		const foundUser = this.users.find(u => u.email === email);
-		return Promise.resolve(foundUser ? { ...foundUser } : undefined);
+		return this.users.find(u => u.email === email);
 	}
 
 	public async findById(id: string): Promise<User | undefined> {
-		const foundUser = this.users.find(u => u.id === id);
-		return Promise.resolve(foundUser ? { ...foundUser } : undefined);
+		return this.users.find(u => u.id === id);
 	}
 
 	public async save(user: User): Promise<User> {
@@ -50,6 +48,6 @@ export default class FakeUsersRepository implements IUsersRepository {
 			this.users[foundUserIndex] = user;
 		}
 
-		return Promise.resolve({ ...user });
+		return user;
 	}
 }
