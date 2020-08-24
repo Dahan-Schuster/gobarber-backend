@@ -68,14 +68,18 @@ class AppointmentsRepository implements IAppointmentsRepository {
 	 * Returns null if no appointment is find
 	 *
 	 * @param date
+	 * @param providerId
 	 * @return Promise<Appointment | null>
 	 *
 	 * @since 1.0.0 - Initial version
 	 * @since 2.0.0 - Use methods of TypeOrm to search in the repository
 	 */
-	public async findByDate(date: Date): Promise<Appointment | undefined> {
+	public async findByDate(
+		date: Date,
+		providerId?: string,
+	): Promise<Appointment | undefined> {
 		const findAppointment = await this.ormRepository.findOne({
-			where: { date },
+			where: { date, providerId },
 		});
 
 		return findAppointment || undefined;

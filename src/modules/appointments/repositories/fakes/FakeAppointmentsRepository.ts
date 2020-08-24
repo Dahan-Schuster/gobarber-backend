@@ -54,8 +54,16 @@ export default class FakeAppointmentsRepository
 	 *
 	 * @since 1.0.0 - Initial version
 	 */
-	public async findByDate(date: Date): Promise<Appointment | undefined> {
-		return this.appointments.find(p => isEqual(p.date, date));
+	public async findByDate(
+		date: Date,
+		providerId?: string,
+	): Promise<Appointment | undefined> {
+		return this.appointments.find(p => {
+			return (
+				isEqual(p.date, date) &&
+				(providerId ? p.providerId === providerId : true)
+			);
+		});
 	}
 
 	/**
