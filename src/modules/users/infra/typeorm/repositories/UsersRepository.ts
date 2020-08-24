@@ -1,4 +1,4 @@
-import { EntityRepository, getRepository, In, Not, Repository } from 'typeorm';
+import { EntityRepository, getRepository, Not, Repository } from 'typeorm';
 import User from '@modules/users/infra/typeorm/entities/User';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
@@ -26,17 +26,17 @@ class UsersRepository implements IUsersRepository {
 	/**
 	 * Finds all users, except the ones with ID included id exceptUserIds
 	 *
-	 * @param exceptUserIds
+	 * @param exceptUserId
 	 * @return Promise<User[]>
 	 *
 	 * @since 1.1.0 - Initial version
 	 */
-	public async findAllProviders(exceptUserIds?: string[]): Promise<User[]> {
+	public async findAllProviders(exceptUserId?: string): Promise<User[]> {
 		let options;
-		if (exceptUserIds) {
+		if (exceptUserId) {
 			options = {
 				where: {
-					id: Not(In(exceptUserIds)),
+					id: Not(exceptUserId),
 				},
 			};
 		}

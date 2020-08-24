@@ -12,7 +12,7 @@ export default interface IUsersRepository {
 
 	findByEmail(email: string): Promise<User | undefined>;
 
-	findAllProviders(exceptUserIds?: string[]): Promise<User[]>;
+	findAllProviders(exceptUserId?: string): Promise<User[]>;
 
 	create(data: ICreateUserDTO): Promise<User>;
 

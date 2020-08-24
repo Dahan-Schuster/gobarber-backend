@@ -23,11 +23,11 @@ export default class FakeUsersRepository implements IUsersRepository {
 		return Promise.resolve({ ...user });
 	}
 
-	public async findAllProviders(exceptUserIds?: string[]): Promise<User[]> {
+	public async findAllProviders(exceptUserId?: string): Promise<User[]> {
 		let { users } = this;
 
-		if (exceptUserIds) {
-			users = users.filter(user => !exceptUserIds.includes(user.id));
+		if (exceptUserId) {
+			users = users.filter(user => exceptUserId !== user.id);
 		}
 
 		return users;
