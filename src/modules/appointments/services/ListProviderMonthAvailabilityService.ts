@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { getDate, getDaysInMonth } from 'date-fns';
+import { getDate, getDaysInMonth, isAfter, endOfDay } from 'date-fns';
 
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 
@@ -64,6 +64,8 @@ export default class ListProviderMonthAvailabilityService {
 
 		// for each day, verify if the number of appointments exceed the max allowed
 		return eachDayArray.map(day => {
+			const compareDate = endOfDay(new Date(year, month - 1, day));
+
 			const appointmentsInDay = appointmentsInTheGivenMonth.filter(
 				appointment => getDate(appointment.date) === day,
 			);
@@ -71,6 +73,7 @@ export default class ListProviderMonthAvailabilityService {
 			return {
 				day,
 				available:
+					isAfter(compareDate, new Date()) &&
 					appointmentsInDay.length < workJourney.appointmentsPerDay,
 			};
 		});
