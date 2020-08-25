@@ -16,7 +16,7 @@ export default class ProvidersAvailabilityController {
 		response: Response,
 	): Promise<Response> {
 		const { id: providerId } = request.params;
-		const { month, year } = request.body;
+		const { month, year } = request.query;
 
 		const listProviderMonthAvailabilityService = container.resolve(
 			ListProviderMonthAvailabilityService,
@@ -24,8 +24,8 @@ export default class ProvidersAvailabilityController {
 
 		const availableDays = await listProviderMonthAvailabilityService.execute(
 			{
-				month,
-				year,
+				month: Number(month),
+				year: Number(year),
 				providerId,
 			},
 		);
@@ -38,7 +38,7 @@ export default class ProvidersAvailabilityController {
 		response: Response,
 	): Promise<Response> {
 		const { id: providerId } = request.params;
-		const { day, month, year } = request.body;
+		const { day, month, year } = request.query;
 
 		const listProviderDayAvailabilityService = container.resolve(
 			ListProviderDayAvailabilityService,
@@ -46,9 +46,9 @@ export default class ProvidersAvailabilityController {
 
 		const availableHours = await listProviderDayAvailabilityService.execute(
 			{
-				day,
-				month,
-				year,
+				day: Number(day),
+				month: Number(month),
+				year: Number(year),
 				providerId,
 			},
 		);
