@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 
 import authConfig from '@config/auth';
+import AppError from '@shared/errors/AppError';
 
 /**
  * Format of the token payload returned by the verify function
@@ -38,9 +39,14 @@ export default function ensureAuthenticated(
 
 	const [, token] = authorizationHeader.split(' ');
 
-	const decodedToken = verify(token, String(authConfig.jwt.secret));
+	try {
+		const decodedToken = verify(token, String(authConfig.jwt.secret));
 
-	const { sub } = decodedToken as ITokenPayload;
-	req.user = { id: sub };
-	next();
+		const { sub } = decodedToken as ITokenPayload;
+		req.user = { id: sub };
+
+		next();
+	} catch {
+		throw new AppError('Token expired', 401);
+	}
 }
